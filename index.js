@@ -4,7 +4,10 @@
   var thetaLoc,theta=0;
   var scaleLoc, scale=0, scaler=-0.0124;
   var alphaLoc, alphaLoc2, alpha=0;
-  var rot3d = [0.0, 0.0, 0.0];
+  var x = 0.0, y = 0.0, z = 0.0;// = new Float32Array([0.00, 0.00, 0.00]);
+  var l_border, r_border;
+  var trans   = new Float32Array([0.005, 0.005, 0.005]);
+  var transLoc;
   var vertices, vertices2;
 
   function generate_vertices(shape){
@@ -95,6 +98,7 @@
     gl.useProgram(shaders[1]);
     scaleLoc = gl.getUniformLocation(shaders[1], 'scale');
     alphaLoc2 = gl.getUniformLocation(shaders[1], 'alpha');
+    transLoc = gl.getUniformLocation(shaders[1], 'trans3d');
 
     resizer();
 
@@ -126,6 +130,18 @@
       if(scale> 1 || scale<-1)scaler *= -1;
       scale += scaler;
       // scale = Math.sin(theta+Math.PI/2);
+      r_border = 0.5 - 0.3*Math.abs(scale);
+      l_border = -0.5 + 0.3*Math.abs(scale);
+      if(x >= r_border) trans[0] = -0.005;
+      else if(x <= l_border) trans[0] = 0.005;
+      if(y >= 0.19 || y <= -0.19) trans[1] *= -1;
+      if(z >= 0.19 || z <= -0.19) trans[2] *= -1;
+      x += trans[0];
+      y += trans[1];
+      z += trans[2];
+      // console.log(x,y,z);
+
+      gl.uniform3fv(transLoc, [x, y, z]);
       gl.uniform1f(scaleLoc, scale);
       gl.uniform1f(alphaLoc2, alpha);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 29);

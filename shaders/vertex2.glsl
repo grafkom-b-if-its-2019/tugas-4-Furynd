@@ -6,7 +6,7 @@ varying vec3 fColor;
 
 uniform float scale;
 // uniform float alpha;
-uniform vec3 rot3d;
+uniform vec3 trans3d;
 
 void main() {
   fColor = vColor;
@@ -20,9 +20,9 @@ void main() {
   );
 
   mat4 translate = mat4(
-    1.0, 0.0, 0.0, rot3d.x,
-    0.0, 1.0, 0.0, rot3d.y,
-    0.0, 0.0, 1.0, rot3d.z,
+    1.0, 0.0, 0.0, -0.5 + trans3d.x,
+    0.0, 1.0, 0.0, trans3d.y,
+    0.0, 0.0, 1.0, trans3d.z,
     0.0, 0.0, 0.0, 1.0
   );
 
