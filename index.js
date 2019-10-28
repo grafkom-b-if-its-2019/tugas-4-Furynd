@@ -4,131 +4,69 @@
   var thetaLoc,theta=0;
   var scaleLoc, scale=0, scaler=-0.0124;
   var alphaLoc, alphaLoc2, alpha=0;
+  var rot3d = [0.0, 0.0, 0.0];
   var vertices, vertices2;
 
-  // var vertices = [
-  //   // -0.8, +0.3, //top left point
-  //   -0.8, +0.2,     Math.random(), Math.random(), Math.random(),//1
-  //   -0.36, +0.2,    Math.random(), Math.random(), Math.random(),//10
-  //   -0.30, +0.26,   Math.random(), Math.random(), Math.random(),//9
-  //   -0.66, +0.26,   Math.random(), Math.random(), Math.random(),//6
-  //   -0.66, +0.2,    Math.random(), Math.random(), Math.random(),//5
-  //   -0.7, +0.2,     Math.random(), Math.random(), Math.random(),//3
-  //   -0.7, +0.3,     Math.random(), Math.random(), Math.random(),//7
-  //   -0.2, +0.3,     Math.random(), Math.random(), Math.random(),//8 top right point
-  //   -0.34, +0.16,   Math.random(), Math.random(), Math.random(),//15
-  //   -0.76, +0.16,   Math.random(), Math.random(), Math.random(),//2
-  //   -0.76, -0.2,    Math.random(), Math.random(), Math.random(),//23
-  //   -0.70, -0.14,   Math.random(), Math.random(), Math.random(),//21
-  //   -0.70, -0.00,   Math.random(), Math.random(), Math.random(),//19
-  //   -0.56, -0.00,   Math.random(), Math.random(), Math.random(),//17
-  //   -0.5, +0.06,    Math.random(), Math.random(), Math.random(),//15
-  //   -0.70, +0.06,   Math.random(), Math.random(), Math.random(),//18
-  //   -0.7, +0.16,    Math.random(), Math.random(), Math.random(),//4
-  //   -0.66, +0.16,   Math.random(), Math.random(), Math.random(),//12
-  //   -0.66, +0.1,    Math.random(), Math.random(), Math.random(),//13
-  //   -0.40, +0.1,    Math.random(), Math.random(), Math.random(),//14
-  //   -0.54, -0.04,   Math.random(), Math.random(), Math.random(),//16
-  //   -0.66, -0.04,   Math.random(), Math.random(), Math.random(),//20
-  //   -0.66, -0.16,   Math.random(), Math.random(), Math.random(),//22
-  //   -0.8, -0.3,     Math.random(), Math.random(), Math.random() //24 bottom left point
-
-  // ];
-
-  // var vertices2 = [
-  //   +0.24, +0.16,   Math.random(), Math.random(), Math.random(),//2
-  //   +0.2, +0.2,     Math.random(), Math.random(), Math.random(),//1
-  //   +0.3, +0.16,    Math.random(), Math.random(), Math.random(),//4
-  //   +0.3, +0.2,     Math.random(), Math.random(), Math.random(),//3
-  //   +0.34, +0.2,    Math.random(), Math.random(), Math.random(),//5
-  //   +0.3, +0.3,     Math.random(), Math.random(), Math.random(),//7
-  //   +0.34, +0.26,   Math.random(), Math.random(), Math.random(),//6
-  //   +0.8, +0.3,     Math.random(), Math.random(), Math.random(),//8 top right point
-  //   +0.70, +0.26,   Math.random(), Math.random(), Math.random(),//9
-  //   +0.8, +0.3,     Math.random(), Math.random(), Math.random(),//8 top right point
-  //   +0.64, +0.2,    Math.random(), Math.random(), Math.random(),//10
-  //   +0.66, +0.16,   Math.random(), Math.random(), Math.random(),//11
-  //   +0.34, +0.2,    Math.random(), Math.random(), Math.random(),//5
-  //   +0.34, +0.16,   Math.random(), Math.random(), Math.random(),//12
-  //   +0.3, +0.16,    Math.random(), Math.random(), Math.random(),//4
-  //   +0.34, +0.1,    Math.random(), Math.random(), Math.random(),//13
-  //   +0.30, +0.06,   Math.random(), Math.random(), Math.random(),//18
-  //   +0.6, +0.1,     Math.random(), Math.random(), Math.random(),//14
-  //   +0.5, +0.06,    Math.random(), Math.random(), Math.random(),//15
-  //   +0.46, -0.04,   Math.random(), Math.random(), Math.random(),//16
-  //   +0.44, -0.00,   Math.random(), Math.random(), Math.random(),//17
-  //   +0.34, -0.04,   Math.random(), Math.random(), Math.random(),//20
-  //   +0.30, -0.00,   Math.random(), Math.random(), Math.random(),//19
-  //   +0.34, -0.16,   Math.random(), Math.random(), Math.random(),//22
-  //   +0.30, -0.14,   Math.random(), Math.random(), Math.random(),//21
-  //   +0.2, -0.3,     Math.random(), Math.random(), Math.random(),//24 bottom left point
-  //   +0.24, -0.2,    Math.random(), Math.random(), Math.random(),//23
-  //   +0.2, +0.2,     Math.random(), Math.random(), Math.random(),//1
-  //   +0.24, +0.16,   Math.random(), Math.random(), Math.random()//2
-  // ];
-
-  function generate_vertices(mode){
+  function generate_vertices(shape){
     var vertexarray;
-    if(mode=="line"){
+    if(shape=="line"){
       vertexarray = new Float32Array([
-        // -0.8, +0.3, //top left point
-        -0.8, +0.2,     Math.random(), Math.random(), Math.random(),//1
-        -0.36, +0.2,    Math.random(), Math.random(), Math.random(),//10
-        -0.30, +0.26,   Math.random(), Math.random(), Math.random(),//9
-        -0.66, +0.26,   Math.random(), Math.random(), Math.random(),//6
-        -0.66, +0.2,    Math.random(), Math.random(), Math.random(),//5
-        -0.7, +0.2,     Math.random(), Math.random(), Math.random(),//3
-        -0.7, +0.3,     Math.random(), Math.random(), Math.random(),//7
-        -0.2, +0.3,     Math.random(), Math.random(), Math.random(),//8 top right point
-        -0.34, +0.16,   Math.random(), Math.random(), Math.random(),//15
-        -0.76, +0.16,   Math.random(), Math.random(), Math.random(),//2
-        -0.76, -0.2,    Math.random(), Math.random(), Math.random(),//23
-        -0.70, -0.14,   Math.random(), Math.random(), Math.random(),//21
-        -0.70, -0.00,   Math.random(), Math.random(), Math.random(),//19
-        -0.56, -0.00,   Math.random(), Math.random(), Math.random(),//17
-        -0.5, +0.06,    Math.random(), Math.random(), Math.random(),//15
-        -0.70, +0.06,   Math.random(), Math.random(), Math.random(),//18
-        -0.7, +0.16,    Math.random(), Math.random(), Math.random(),//4
-        -0.66, +0.16,   Math.random(), Math.random(), Math.random(),//12
-        -0.66, +0.1,    Math.random(), Math.random(), Math.random(),//13
-        -0.40, +0.1,    Math.random(), Math.random(), Math.random(),//14
-        -0.54, -0.04,   Math.random(), Math.random(), Math.random(),//16
-        -0.66, -0.04,   Math.random(), Math.random(), Math.random(),//20
-        -0.66, -0.16,   Math.random(), Math.random(), Math.random(),//22
-        -0.8, -0.3,     Math.random(), Math.random(), Math.random() //24 bottom left point
-    
+        -0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //1
+        -0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //
+        -0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //2
+        -0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
+        -0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //3
+        +0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //   pojok kiri depan atas
+        +0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //4
+        -0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
+        +0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //5
+        +0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
+        +0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //6
+        +0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //   pojok kanan depan bawah
+        +0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //7
+        +0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
+        +0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //8
+        +0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //
+        +0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //9
+        -0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //   pojok kanan atas belakang
+        -0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //10
+        -0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
+        -0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //11
+        -0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //
+        -0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //12
+        +0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //   pojok kiri bawah belakang
       ]);
     } else{
       vertexarray = new Float32Array([
-        +0.24, +0.16,   Math.random(), Math.random(), Math.random(),//2
-        +0.2, +0.2,     Math.random(), Math.random(), Math.random(),//1
-        +0.3, +0.16,    Math.random(), Math.random(), Math.random(),//4
-        +0.3, +0.2,     Math.random(), Math.random(), Math.random(),//3
-        +0.34, +0.2,    Math.random(), Math.random(), Math.random(),//5
-        +0.3, +0.3,     Math.random(), Math.random(), Math.random(),//7
-        +0.34, +0.26,   Math.random(), Math.random(), Math.random(),//6
-        +0.8, +0.3,     Math.random(), Math.random(), Math.random(),//8 top right point
-        +0.70, +0.26,   Math.random(), Math.random(), Math.random(),//9
-        +0.8, +0.3,     Math.random(), Math.random(), Math.random(),//8 top right point
-        +0.64, +0.2,    Math.random(), Math.random(), Math.random(),//10
-        +0.66, +0.16,   Math.random(), Math.random(), Math.random(),//11
-        +0.34, +0.2,    Math.random(), Math.random(), Math.random(),//5
-        +0.34, +0.16,   Math.random(), Math.random(), Math.random(),//12
-        +0.3, +0.16,    Math.random(), Math.random(), Math.random(),//4
-        +0.34, +0.1,    Math.random(), Math.random(), Math.random(),//13
-        +0.30, +0.06,   Math.random(), Math.random(), Math.random(),//18
-        +0.6, +0.1,     Math.random(), Math.random(), Math.random(),//14
-        +0.5, +0.06,    Math.random(), Math.random(), Math.random(),//15
-        +0.46, -0.04,   Math.random(), Math.random(), Math.random(),//16
-        +0.44, -0.00,   Math.random(), Math.random(), Math.random(),//17
-        +0.34, -0.04,   Math.random(), Math.random(), Math.random(),//20
-        +0.30, -0.00,   Math.random(), Math.random(), Math.random(),//19
-        +0.34, -0.16,   Math.random(), Math.random(), Math.random(),//22
-        +0.30, -0.14,   Math.random(), Math.random(), Math.random(),//21
-        +0.2, -0.3,     Math.random(), Math.random(), Math.random(),//24 bottom left point
-        +0.24, -0.2,    Math.random(), Math.random(), Math.random(),//23
-        +0.2, +0.2,     Math.random(), Math.random(), Math.random(),//1
-        +0.24, +0.16,   Math.random(), Math.random(), Math.random()//2
+        +0.24, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//2
+        +0.20, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//1
+        +0.30, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//4
+        +0.30, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//3
+        +0.34, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//5
+        +0.30, +0.30, 0.0,   Math.random(), Math.random(), Math.random(),//7
+        +0.34, +0.26, 0.0,   Math.random(), Math.random(), Math.random(),//6
+        +0.80, +0.30, 0.0,   Math.random(), Math.random(), Math.random(),//8 top right point
+        +0.70, +0.26, 0.0,   Math.random(), Math.random(), Math.random(),//9
+        +0.80, +0.30, 0.0,   Math.random(), Math.random(), Math.random(),//8 top right point
+        +0.64, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//10
+        +0.66, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//11
+        +0.34, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//5
+        +0.34, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//12
+        +0.30, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//4
+        +0.34, +0.10, 0.0,   Math.random(), Math.random(), Math.random(),//13
+        +0.30, +0.06, 0.0,   Math.random(), Math.random(), Math.random(),//18
+        +0.60, +0.10, 0.0,   Math.random(), Math.random(), Math.random(),//14
+        +0.50, +0.06, 0.0,   Math.random(), Math.random(), Math.random(),//15
+        +0.46, -0.04, 0.0,   Math.random(), Math.random(), Math.random(),//16
+        +0.44, -0.00, 0.0,   Math.random(), Math.random(), Math.random(),//17
+        +0.34, -0.04, 0.0,   Math.random(), Math.random(), Math.random(),//20
+        +0.30, -0.00, 0.0,   Math.random(), Math.random(), Math.random(),//19
+        +0.34, -0.16, 0.0,   Math.random(), Math.random(), Math.random(),//22
+        +0.30, -0.14, 0.0,   Math.random(), Math.random(), Math.random(),//21
+        +0.20, -0.30, 0.0,   Math.random(), Math.random(), Math.random(),//24 bottom left point
+        +0.24, -0.20, 0.0,   Math.random(), Math.random(), Math.random(),//23
+        +0.20, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//1
+        +0.24, +0.16, 0.0,   Math.random(), Math.random(), Math.random()//2
       ]);
     }
     return vertexarray;
@@ -181,7 +119,7 @@
       alpha += Math.PI * 0.005;
       gl.uniform1f(thetaLoc, theta);
       gl.uniform1f(alphaLoc, alpha);
-      gl.drawArrays(gl.LINE_LOOP, 0, 24);
+      gl.drawArrays(gl.LINES, 0, 24);
     }
     else{
       initBuffers(program, vertices2);
@@ -201,8 +139,8 @@
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
     var vPosition = gl.getAttribLocation(program, 'vPosition');
     var vColor = gl.getAttribLocation(program, 'vColor');
-    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, gl.FALSE, 5 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(vColor, 3, gl.FLOAT, gl.FALSE, 5 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
+    gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, gl.FALSE, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+    gl.vertexAttribPointer(vColor, 3, gl.FLOAT, gl.FALSE, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
 
     gl.enableVertexAttribArray(vPosition);
     gl.enableVertexAttribArray(vColor);
