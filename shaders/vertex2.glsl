@@ -37,5 +37,5 @@ void main() {
     -0.5, 0.0, 0.0, 1.0
   );
 
-  gl_Position = translate * rotate * pos;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * translate * rotate * pos;
 }
