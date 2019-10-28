@@ -23,6 +23,7 @@
   var alphaLoc, alphaLoc2, alpha=0;
   var x = 0.0, y = 0.0, z = 0.0;// = new Float32Array([0.00, 0.00, 0.00]);
   var l_border, r_border;
+  var f_border, b_border;
   var trans   = new Float32Array([0.005, 0.005, 0.005]);
   var transLoc;
   var vertices, vertices2;
@@ -179,10 +180,13 @@
       // scale = Math.sin(theta+Math.PI/2);
       r_border = 0.5 - 0.3*Math.abs(scale);
       l_border = -0.5 + 0.3*Math.abs(scale);
+      f_border = 0.5 - 0.3*(1-Math.abs(scale));
+      b_border = -0.5 + 0.3*(1-Math.abs(scale));
       if(x >= r_border) trans[0] = -0.005;
       else if(x <= l_border) trans[0] = 0.005;
       if(y >= 0.19 || y <= -0.19) trans[1] *= -1;
-      if(z >= 0.19 || z <= -0.19) trans[2] *= -1;
+      if(z >= f_border) trans[2] = -0.005;
+      else if(z <= b_border) trans[2] = 0.005;
       x += trans[0];
       y += trans[1];
       z += trans[2];
