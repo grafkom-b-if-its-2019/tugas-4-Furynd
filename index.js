@@ -1,5 +1,22 @@
-(function() {
-  var canvas, gl, program;
+(function(global) {
+  var state = {
+    gl: null,
+    program: null,
+    ui: {
+      pressedKeys: {},
+    },
+    animation: {
+    },
+    app: {
+      eye: {
+        x:0.0,
+        y:0.0,
+        z:1,
+      },
+    },
+  };
+
+  var canvas, gl;
   var shaders = [];
   var thetaLoc,theta=0;
   var scaleLoc, scale=0, scaler=-0.0124;
@@ -114,9 +131,39 @@
   }
 
   function draw(program, drawmode){
+
+    var uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
+    var uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
+
+    var mvm = mat4.create();
+    var pm = mat4.create();
+
+    mvm = mat4.lookAt(mvm,
+      vec3.fromValues(state.app.eye.x,state.app.eye.y,state.app.eye.z),
+      vec3.fromValues(0,0,0),
+      vec3.fromValues(0,1,0)
+    );
+
+    var fovy = 90.0;
+    var aspect = canvas.width/canvas.height;
+    var near = 0.0;
+    var far = 10;
+
+    pm = mat4.perspective(
+      pm,
+      fovy,
+      aspect,
+      near,
+      far
+    );
+
     vertices = generate_vertices("line");
     vertices2 = generate_vertices("triangle");
     gl.useProgram(program);
+
+    gl.uniformMatrix4fv(uModelViewMatrix, false, mvm);
+    gl.uniformMatrix4fv(uProjectionMatrix, false, pm);    
+
     if(drawmode == "line"){
       initBuffers(program, vertices);
       theta -= Math.PI * 0.0124;

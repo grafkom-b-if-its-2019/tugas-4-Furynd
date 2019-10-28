@@ -13,10 +13,5 @@ void main() {
 
   vec4 pos = vec4(vPosition, 1.0);
 
-  // mat4 rotate = mat4(cos(theta), 0.0, -sin(theta), 0.5*cos(theta)-0.5,
-  //                    0.0,        1.0,        0.0, 0.0,
-  //                    sin(theta), 0.0, cos(theta), 0.5*sin(theta),//+sin(alpha)/10.0,
-  //                    0.0,        0.0,        0.0, 1.0);
-
-  gl_Position = pos;
+  gl_Position = uProjectionMatrix * uModelViewMatrix * pos;
 }
