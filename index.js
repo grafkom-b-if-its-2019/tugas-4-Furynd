@@ -1,223 +1,386 @@
-(function(global) {
-  var state = {
-    gl: null,
-    program: null,
-    ui: {
-      pressedKeys: {},
-    },
-    animation: {
-    },
-    app: {
-      eye: {
-        x:0.0,
-        y:0.0,
-        z:1,
-      },
-    },
-  };
-
-  var canvas, gl;
-  var shaders = [];
-  var thetaLoc,theta=0;
-  var scaleLoc, scale=0, scaler=-0.0124;
-  var alphaLoc, alphaLoc2, alpha=0;
-  var x = 0.0, y = 0.0, z = 0.0;// = new Float32Array([0.00, 0.00, 0.00]);
-  var l_border, r_border;
-  var f_border, b_border;
-  var trans   = new Float32Array([0.005, 0.005, 0.005]);
-  var transLoc;
-  var vertices, vertices2;
-
-  function generate_vertices(shape){
-    var vertexarray;
-    if(shape=="line"){
-      vertexarray = new Float32Array([
-        -0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //1
-        -0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //
-        -0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //2
-        -0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
-        -0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //3
-        +0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //   pojok kiri depan atas
-        +0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //4
-        -0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
-        +0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //5
-        +0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
-        +0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //6
-        +0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //   pojok kanan depan bawah
-        +0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //7
-        +0.5, +0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
-        +0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //8
-        +0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //
-        +0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //9
-        -0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //   pojok kanan atas belakang
-        -0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //10
-        -0.5, -0.5, +0.5,   Math.random(), Math.random(), Math.random(), //
-        -0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //11
-        -0.5, +0.5, -0.5,   Math.random(), Math.random(), Math.random(), //
-        -0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //12
-        +0.5, -0.5, -0.5,   Math.random(), Math.random(), Math.random(), //   pojok kiri bawah belakang
-      ]);
-    } else{
-      vertexarray = new Float32Array([
-        +0.24, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//2
-        +0.20, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//1
-        +0.30, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//4
-        +0.30, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//3
-        +0.34, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//5
-        +0.30, +0.30, 0.0,   Math.random(), Math.random(), Math.random(),//7
-        +0.34, +0.26, 0.0,   Math.random(), Math.random(), Math.random(),//6
-        +0.80, +0.30, 0.0,   Math.random(), Math.random(), Math.random(),//8 top right point
-        +0.70, +0.26, 0.0,   Math.random(), Math.random(), Math.random(),//9
-        +0.80, +0.30, 0.0,   Math.random(), Math.random(), Math.random(),//8 top right point
-        +0.64, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//10
-        +0.66, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//11
-        +0.34, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//5
-        +0.34, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//12
-        +0.30, +0.16, 0.0,   Math.random(), Math.random(), Math.random(),//4
-        +0.34, +0.10, 0.0,   Math.random(), Math.random(), Math.random(),//13
-        +0.30, +0.06, 0.0,   Math.random(), Math.random(), Math.random(),//18
-        +0.60, +0.10, 0.0,   Math.random(), Math.random(), Math.random(),//14
-        +0.50, +0.06, 0.0,   Math.random(), Math.random(), Math.random(),//15
-        +0.46, -0.04, 0.0,   Math.random(), Math.random(), Math.random(),//16
-        +0.44, -0.00, 0.0,   Math.random(), Math.random(), Math.random(),//17
-        +0.34, -0.04, 0.0,   Math.random(), Math.random(), Math.random(),//20
-        +0.30, -0.00, 0.0,   Math.random(), Math.random(), Math.random(),//19
-        +0.34, -0.16, 0.0,   Math.random(), Math.random(), Math.random(),//22
-        +0.30, -0.14, 0.0,   Math.random(), Math.random(), Math.random(),//21
-        +0.20, -0.30, 0.0,   Math.random(), Math.random(), Math.random(),//24 bottom left point
-        +0.24, -0.20, 0.0,   Math.random(), Math.random(), Math.random(),//23
-        +0.20, +0.20, 0.0,   Math.random(), Math.random(), Math.random(),//1
-        +0.24, +0.16, 0.0,   Math.random(), Math.random(), Math.random()//2
-      ]);
-    }
-    return vertexarray;
-  }
+(function() {
 
   glUtils.SL.init({ callback: function() { main(); } });
 
-  function main() {
-    window.addEventListener('resize', resizer);
+  var shaders = [];
+  var canvas = document.getElementById("glcanvas");
+  var gl = glUtils.checkWebGL(canvas);
 
-    canvas = document.getElementById('glcanvas');
-    gl = glUtils.checkWebGL(canvas);
+  var scale = 0;
+  var adder = 0.0088;
 
-    var vertexShader = glUtils.getShader( gl, gl.VERTEX_SHADER, glUtils.SL.Shaders.v1.vertex),
-      fragmentShader = glUtils.getShader( gl, gl.FRAGMENT_SHADER, glUtils.SL.Shaders.v1.fragment);
-    var vertexShader2 = glUtils.getShader( gl, gl.VERTEX_SHADER, glUtils.SL.Shaders.v2.vertex),
-      fragmentShader2 = glUtils.getShader( gl, gl.FRAGMENT_SHADER, glUtils.SL.Shaders.v2.fragment);
+
+  var xAdders = 0.04/2;
+  var yAdders = 0.03/2;
+  var zAdders = 0.02/2;
+  var translate = [0, 0, -0.5];
+
+  var current_middle = [0.4, -0.2, 0];
+
+  var theta = [0, 0, 0];
+  var axis = 0;
+  var xAxis = 0;
+  var yAxis = 1;
+  var zAxis = 2;
+  
+  function initShaders() {
+    var vertexShader = glUtils.getShader(gl, gl.VERTEX_SHADER, glUtils.SL.Shaders.v1.vertex),
+        fragmentShader = glUtils.getShader(gl, gl.FRAGMENT_SHADER, glUtils.SL.Shaders.v1.fragment);
+    var vertexShader2 = glUtils.getShader(gl, gl.VERTEX_SHADER, glUtils.SL.Shaders.v2.vertex),
+        fragmentShader2 = glUtils.getShader(gl, gl.FRAGMENT_SHADER, glUtils.SL.Shaders.v2.fragment);
 
     shaders.push(glUtils.createProgram(gl, vertexShader, fragmentShader));
     shaders.push(glUtils.createProgram(gl, vertexShader2, fragmentShader2));
+  }
 
-    gl.useProgram(shaders[0]);
-    thetaLoc = gl.getUniformLocation(shaders[0], 'theta');
-    alphaLoc = gl.getUniformLocation(shaders[0], 'alpha');
+  function main() {
+    var canvas = document.getElementById("glcanvas");
+    var gl = glUtils.checkWebGL(canvas);
+  
+    // Inisialisasi shaders dan program
+    initShaders();
 
-    gl.useProgram(shaders[1]);
-    scaleLoc = gl.getUniformLocation(shaders[1], 'scale');
-    alphaLoc2 = gl.getUniformLocation(shaders[1], 'alpha');
-    transLoc = gl.getUniformLocation(shaders[1], 'trans3d');
+    var cubeVertices = [
+      // x, y, z            u, v         normal
 
-    resizer();
+      //-0.5,  0.5,  0.5,     0.0, 1.0,  0.0, 0.0, 1.0, // depan, merah, BAD BDC
+      //-0.5, -0.5,  0.5,     0.0, 0.0,  0.0, 0.0, 1.0, 
+      // 0.5, -0.5,  0.5,     1.0, 0.0,  0.0, 0.0, 1.0, 
+      //-0.5,  0.5,  0.5,     0.0, 1.0,  0.0, 0.0, 1.0, 
+      // 0.5, -0.5,  0.5,     1.0, 0.0,  0.0, 0.0, 1.0, 
+      // 0.5,  0.5,  0.5,     1.0, 1.0,  0.0, 0.0, 1.0, 
 
-    function render(){
-      gl.clearColor(0.0, 0.0, 0.0, 1.0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+       0.5,  0.5,  0.5,     0.0, 1.0,  1.0, 0.0, 0.0, // kanan, hijau, CDH CHG
+       0.5, -0.5,  0.5,     0.0, 0.0,  1.0, 0.0, 0.0,
+       0.5, -0.5, -0.5,     0.2, 0.0,  1.0, 0.0, 0.0,
+       0.5,  0.5,  0.5,     0.0, 1.0,  1.0, 0.0, 0.0,
+       0.5, -0.5, -0.5,     0.2, 0.0,  1.0, 0.0, 0.0,
+       0.5,  0.5, -0.5,     0.2, 1.0,  1.0, 0.0, 0.0,
 
-      draw(shaders[0],"line");
-      draw(shaders[1],"triangle");
+       0.5, -0.5,  0.5,     0.2, 1.0,  0.0, -1.0, 0.0, // bawah, biru, DAE DEH
+      -0.5, -0.5,  0.5,     0.2, 0.0,  0.0, -1.0, 0.0,
+      -0.5, -0.5, -0.5,     0.4, 0.0,  0.0, -1.0, 0.0,
+       0.5, -0.5,  0.5,     0.2, 1.0,  0.0, -1.0, 0.0,
+      -0.5, -0.5, -0.5,     0.4, 0.0,  0.0, -1.0, 0.0,
+       0.5, -0.5, -0.5,     0.4, 1.0,  0.0, -1.0, 0.0,
+
+      -0.5, -0.5, -0.5,     0.4, 1.0,  0.0, 0.0, -1.0, // belakang, kuning, EFG EGH
+      -0.5,  0.5, -0.5,     0.4, 0.0,  0.0, 0.0, -1.0,
+       0.5,  0.5, -0.5,     0.6, 0.0,  0.0, 0.0, -1.0,
+      -0.5, -0.5, -0.5,     0.4, 1.0,  0.0, 0.0, -1.0,
+       0.5,  0.5, -0.5,     0.6, 0.0,  0.0, 0.0, -1.0,
+       0.5, -0.5, -0.5,     0.6, 1.0,  0.0, 0.0, -1.0,
+
+      -0.5,  0.5, -0.5,     0.6, 1.0,  -1.0, 0.0, 0.0, // kiri, cyan, FEA FAB
+      -0.5, -0.5, -0.5,     0.6, 0.0,  -1.0, 0.0, 0.0,
+      -0.5, -0.5,  0.5,     0.8, 0.0,  -1.0, 0.0, 0.0,
+      -0.5,  0.5, -0.5,     0.6, 1.0,  -1.0, 0.0, 0.0,
+      -0.5, -0.5,  0.5,     0.8, 0.0,  -1.0, 0.0, 0.0,
+      -0.5,  0.5,  0.5,     0.8, 1.0,  -1.0, 0.0, 0.0,
+
+       0.5,  0.5, -0.5,     0.8, 1.0,  0.0, 1.0, 0.0, // atas, magenta, GFB GBC
+      -0.5,  0.5, -0.5,     0.8, 0.0,  0.0, 1.0, 0.0,
+      -0.5,  0.5,  0.5,     1.0, 0.0,  0.0, 1.0, 0.0,
+       0.5,  0.5, -0.5,     0.8, 1.0,  0.0, 1.0, 0.0,
+      -0.5,  0.5,  0.5,     1.0, 0.0,  0.0, 1.0, 0.0,
+       0.5,  0.5,  0.5,     1.0, 1.0,  0.0, 1.0, 0.0
+    ];
+
+    var textVertices = new Float32Array([
+         +0.24, +0.16,  Math.random(), Math.random(), Math.random(),//2
+        +0.20, +0.20,   Math.random(), Math.random(), Math.random(),//1
+        +0.30, +0.16,   Math.random(), Math.random(), Math.random(),//4
+        +0.30, +0.20,   Math.random(), Math.random(), Math.random(),//3
+        +0.34, +0.20,   Math.random(), Math.random(), Math.random(),//5
+        +0.30, +0.30,   Math.random(), Math.random(), Math.random(),//7
+        +0.34, +0.26,   Math.random(), Math.random(), Math.random(),//6
+        +0.80, +0.30,   Math.random(), Math.random(), Math.random(),//8 top right point
+        +0.70, +0.26,   Math.random(), Math.random(), Math.random(),//9
+        +0.80, +0.30,   Math.random(), Math.random(), Math.random(),//8 top right point
+        +0.64, +0.20,   Math.random(), Math.random(), Math.random(),//10
+        +0.66, +0.16,   Math.random(), Math.random(), Math.random(),//11
+        +0.34, +0.20,   Math.random(), Math.random(), Math.random(),//5
+        +0.34, +0.16,   Math.random(), Math.random(), Math.random(),//12
+        +0.30, +0.16,   Math.random(), Math.random(), Math.random(),//4
+        +0.34, +0.10,   Math.random(), Math.random(), Math.random(),//13
+        +0.30, +0.06,   Math.random(), Math.random(), Math.random(),//18
+        +0.60, +0.10,   Math.random(), Math.random(), Math.random(),//14
+        +0.50, +0.06,   Math.random(), Math.random(), Math.random(),//15
+        +0.46, -0.04,   Math.random(), Math.random(), Math.random(),//16
+        +0.44, -0.00,   Math.random(), Math.random(), Math.random(),//17
+        +0.34, -0.04,   Math.random(), Math.random(), Math.random(),//20
+        +0.30, -0.00,   Math.random(), Math.random(), Math.random(),//19
+        +0.34, -0.16,   Math.random(), Math.random(), Math.random(),//22
+        +0.30, -0.14,   Math.random(), Math.random(), Math.random(),//21
+        +0.20, -0.30,   Math.random(), Math.random(), Math.random(),//24 bottom left point
+        +0.24, -0.20,   Math.random(), Math.random(), Math.random(),//23
+        +0.20, +0.20,   Math.random(), Math.random(), Math.random(),//1
+        +0.24, +0.16,   Math.random(), Math.random(), Math.random()//2
+    ]);
+    
+    function render() {
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+      
+      drawA(gl.TRIANGLE_STRIP, textVertices, 1, shaders[1]);
+      drawA(gl.TRIANGLES, cubeVertices, 0, shaders[0]);
+    
       requestAnimationFrame(render);
     }
+
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.enable(gl.DEPTH_TEST);
+    // gl.frontFace(gl.CW);
     render();
-  }
 
-  function draw(program, drawmode){
+    function drawA(type, vertices, mode, program) {
 
-    var uModelViewMatrix = gl.getUniformLocation(program, 'uModelViewMatrix');
-    var uProjectionMatrix = gl.getUniformLocation(program, 'uProjectionMatrix');
-
-    var mvm = mat4.create();
-    var pm = mat4.create();
-
-    mvm = mat4.lookAt(mvm,
-      vec3.fromValues(state.app.eye.x,state.app.eye.y,state.app.eye.z),
-      vec3.fromValues(0,0,0),
-      vec3.fromValues(0,1,0)
-    );
-
-    var fovy = 90.0;
-    var aspect = canvas.width/canvas.height;
-    var near = 0.0;
-    var far = 10;
-
-    pm = mat4.perspective(
-      pm,
-      fovy,
-      aspect,
-      near,
-      far
-    );
-
-    vertices = generate_vertices("line");
-    vertices2 = generate_vertices("triangle");
-    gl.useProgram(program);
-
-    gl.uniformMatrix4fv(uModelViewMatrix, false, mvm);
-    gl.uniformMatrix4fv(uProjectionMatrix, false, pm);    
-
-    if(drawmode == "line"){
-      initBuffers(program, vertices);
-      theta -= Math.PI * 0.0124;
-      alpha += Math.PI * 0.005;
-      gl.uniform1f(thetaLoc, theta);
-      gl.uniform1f(alphaLoc, alpha);
-      gl.drawArrays(gl.LINES, 0, 24);
+      var n = initBuffers(mode, vertices, program);
+      if (n < 0) {
+        console.log('Failed to set the positions of the vertices');
+        return;
+      }
+      gl.drawArrays(type, 0, n);
     }
-    else{
-      initBuffers(program, vertices2);
-      if(scale> 1 || scale<-1)scaler *= -1;
-      scale += scaler;
-      // scale = Math.sin(theta+Math.PI/2);
-      r_border = 0.5 - 0.3*Math.abs(scale);
-      l_border = -0.5 + 0.3*Math.abs(scale);
-      f_border = 0.5 - 0.3*(1-Math.abs(scale));
-      b_border = -0.5 + 0.3*(1-Math.abs(scale));
-      if(x >= r_border) trans[0] = -0.005;
-      else if(x <= l_border) trans[0] = 0.005;
-      if(y >= 0.19 || y <= -0.19) trans[1] *= -1;
-      if(z >= f_border) trans[2] = -0.005;
-      else if(z <= b_border) trans[2] = 0.005;
-      x += trans[0];
-      y += trans[1];
-      z += trans[2];
-      // console.log(x,y,z);
 
-      gl.uniform3fv(transLoc, [x, y, z]);
-      gl.uniform1f(scaleLoc, scale);
-      gl.uniform1f(alphaLoc2, alpha);
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 29);
+    
+    var lastX, lastY, dragging;
+    function onMouseDown(event) {
+      var x = event.clientX;
+      var y = event.clientY;
+      var rect = event.target.getBoundingClientRect();
+      if (rect.left <= x &&
+          rect.right > x &&
+          rect.top <= y &&
+          rect.bottom > y) {
+            lastX = x;
+            lastY = y;
+            dragging = true;
+      }
+    }
+    function onMouseUp(event) {
+      dragging = false;
+    }
+    function onMouseMove(event) {
+      var x = event.clientX;
+      var y = event.clientY;
+      if (dragging) {
+        var factor = 10 / canvas.height;
+        var dx = factor * (x - lastX);
+        var dy = factor * (y - lastY);
+        theta[yAxis] += dx;
+        theta[xAxis] += dy;
+      }
+      lastX = x;
+      lastY = y;
+    }
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', onMouseMove);
+
+    function initBuffers(mode, vertices, program) {
+      var n;
+      if (mode) {
+        n = vertices.length/5;
+      } else {
+        n = vertices.length/6;
+      }
+      // console.log(vertices);
+
+      var vertexBuffer = gl.createBuffer();
+      if (!vertexBuffer) {
+        console.log('Failed to create the buffer object');
+        return -1;
+      }
+
+      gl.useProgram(program);
+      gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+      // Definisi view dan projection
+      var vmLoc = gl.getUniformLocation(program, 'view');
+      var pmLoc = gl.getUniformLocation(program, 'projection');
+      var mmLoc = gl.getUniformLocation(program, 'model');
+      var vm = glMatrix.mat4.create();
+      var pm = glMatrix.mat4.create();
+      // console.log(pm);
+
+      glMatrix.mat4.lookAt(vm,
+        glMatrix.vec3.fromValues(0.0, 0.0, -0.5),    // posisi kamera
+        glMatrix.vec3.fromValues(0.0, 0.0, -2.0),  // titik yang dilihat; pusat kubus akan kita pindah ke z=-2
+        glMatrix.vec3.fromValues(0.0, 1.0, 0.0)   // arah atas dari kamera
+      );
+
+      var fovy = glMatrix.glMatrix.toRadian(90.0);
+      var aspect = canvas.width / canvas.height;
+      var near = 0.5;
+      var far = 10.0;
+      glMatrix.mat4.perspective(pm,
+        fovy,
+        aspect,
+        near,
+        far
+      );
+
+      gl.uniformMatrix4fv(vmLoc, false, vm);
+      gl.uniformMatrix4fv(pmLoc, false, pm);
+
+      var vPosition = gl.getAttribLocation(program, 'vPosition');
+      var vNormal = gl.getAttribLocation(program, 'vNormal');
+      
+      // Uniform untuk definisi cahaya
+      var lightColorLoc = gl.getUniformLocation(program, 'lightColor');
+      var lightPositionLoc = gl.getUniformLocation(program, 'lightPosition');
+      var ambientColorLoc = gl.getUniformLocation(program, 'ambientColor');
+      var lightColor = [1, 1, 1];
+      var lightPosition = [translate[0], translate[1], -2 + translate[2]];
+      var ambientColor = glMatrix.vec3.fromValues(0.15, 0.41, 0.24);
+      gl.uniform3fv(lightColorLoc, lightColor);
+      gl.uniform3fv(lightPositionLoc, lightPosition);
+      gl.uniform3fv(ambientColorLoc, ambientColor);
+
+      if (mode) {
+        
+        var vColor = gl.getAttribLocation(program, 'vColor');
+
+        if (scale > 1){
+          adder = -0.0124
+        }
+        else if (scale < -1){
+          adder = 0.0124
+        }
+
+        scale += adder;
+        // console.log(scale);
+        
+        gl.vertexAttribPointer(
+            vPosition, // Variable yang memegang posisi atribut di shader
+            2, // Jumlah element per attribut
+            gl.FLOAT, // tipe data attribut
+            gl.FALSE, 
+            5 * Float32Array.BYTES_PER_ELEMENT, // ukuran byte tiap vertex
+            0 //offset dari posisi elemen di array
+        );
+    
+        gl.vertexAttribPointer(
+            vColor,
+            3,
+            gl.FLOAT,
+            gl.FALSE,
+            5 * Float32Array.BYTES_PER_ELEMENT,
+            2 * Float32Array.BYTES_PER_ELEMENT
+        );
+
+        //Translasi X
+        if (translate[0] + 0.15 > 0.5 || translate[0] - 0.15 < -0.5 ) {
+          xAdders *= -1;
+        }
+        translate[0] += xAdders;
+
+        current_middle += translate[0];
+
+        //Translasi Y
+        if (translate[1] + 0.2 > 0.5 || translate[1] - 0.2 < -0.5 ) {
+          yAdders *= -1;
+        }
+        translate[1] += yAdders;
+
+        //Translasi Z
+        if (translate[2] > 0.5 || translate[2] < -0.5 ) {
+          zAdders *= -1;
+        }
+        translate[2] += zAdders;
+
+        var mm = glMatrix.mat4.create();
+        glMatrix.mat4.translate(mm, mm, [0.0, 0.0, -2.0]);
+        // console.log(translate);
+        glMatrix.mat4.translate(mm, mm, translate);
+        glMatrix.mat4.scale(mm, mm, [0.2, 0.2, 0.2]);
+        glMatrix.mat4.scale(mm, mm, [scale, 1.0, 1.0]);
+        // glMatrix.mat4.rotateZ(mm, mm, theta[zAxis]);
+        // glMatrix.mat4.rotateY(mm, mm, theta[yAxis]);
+        // glMatrix.mat4.rotateX(mm, mm, theta[xAxis]);
+        gl.uniformMatrix4fv(mmLoc, false, mm);
+        
+        gl.enableVertexAttribArray(vColor);
+      } else{
+  
+        var vTexCoord = gl.getAttribLocation(program, 'vTexCoord');
+        gl.vertexAttribPointer(
+          vPosition,  // variabel yang memegang posisi attribute di shader
+          3,          // jumlah elemen per attribute
+          gl.FLOAT,   // tipe data atribut
+          gl.FALSE,
+          8 * Float32Array.BYTES_PER_ELEMENT, // ukuran byte tiap verteks 
+          0                                   // offset dari posisi elemen di array
+        );
+        gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, gl.FALSE, 
+          8 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
+        gl.enableVertexAttribArray(vTexCoord);
+
+        // theta[axis] += glMatrix.glMatrix.toRadian(0.5);  // dalam derajat
+        var mm = glMatrix.mat4.create();
+        glMatrix.mat4.translate(mm, mm, [0.0, 0.0, -2.0]);
+        // glMatrix.mat4.rotateZ(mm, mm, theta[zAxis]);
+        // glMatrix.mat4.rotateY(mm, mm, theta[yAxis]);
+        // glMatrix.mat4.rotateX(mm, mm, theta[xAxis]);
+        gl.uniformMatrix4fv(mmLoc, false, mm);
+        
+        // Uniform untuk tekstur
+        var sampler0Loc = gl.getUniformLocation(program, 'sampler0');
+        gl.uniform1i(sampler0Loc, 0);
+        // Inisialisasi tekstur
+        var texture = gl.createTexture();
+        if (!texture) {
+          reject(new Error('Gagal membuat objek tekstur'));
+        }
+        gl.activeTexture(gl.TEXTURE0);
+        initTexture(texture);
+      }
+      
+      gl.vertexAttribPointer(vNormal, 3, gl.FLOAT, gl.FALSE, 
+        8 * Float32Array.BYTES_PER_ELEMENT, 5 * Float32Array.BYTES_PER_ELEMENT);
+
+      var nmLoc = gl.getUniformLocation(program, 'normalMatrix');
+
+      // Perhitungan modelMatrix untuk vektor normal
+      var nm = glMatrix.mat3.create();
+      glMatrix.mat3.normalFromMat4(nm, mm);
+      gl.uniformMatrix3fv(nmLoc, false, nm);
+
+      //Rotation Matrix
+      var mvpLoc = gl.getUniformLocation(program, 'MVPMatrix');
+      var mvp = glMatrix.mat4.create();
+      glMatrix.mat4.multiply(mvp,vm,mm);
+      glMatrix.mat4.multiply(mvp,pm,mvp);
+      glMatrix.mat4.rotateY(mvp, mvp, theta[yAxis]);
+      glMatrix.mat4.rotateX(mvp, mvp, theta[xAxis]);
+
+      gl.uniformMatrix4fv(mvpLoc, false, mvp);
+
+      gl.enableVertexAttribArray(vPosition);
+      gl.enableVertexAttribArray(vNormal);
+      return n;
+    }
+
+    
+
+    // Membuat mekanisme pembacaan gambar jadi tekstur
+    function initTexture(texture) {
+      var imageSource = 'images/untitled.png';
+      var image = new Image();
+      if (!image) {
+        reject(new Error('Gagal membuat objek gambar'));
+      }
+      image.onload = function() {
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+      }
+      image.src = imageSource;
     }
   }
 
-  function initBuffers(program, vertices) {
-    var vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    var vPosition = gl.getAttribLocation(program, 'vPosition');
-    var vColor = gl.getAttribLocation(program, 'vColor');
-    gl.vertexAttribPointer(vPosition, 3, gl.FLOAT, gl.FALSE, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
-    gl.vertexAttribPointer(vColor, 3, gl.FLOAT, gl.FALSE, 6 * Float32Array.BYTES_PER_ELEMENT, 3 * Float32Array.BYTES_PER_ELEMENT);
-
-    gl.enableVertexAttribArray(vPosition);
-    gl.enableVertexAttribArray(vColor);
-  }
-
-  function resizer() {
-    canvas.width = window.innerHeight;
-    canvas.height = window.innerHeight;
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-    draw(shaders[0],"line");
-    draw(shaders[1],"triangles");
-  }
-})(window || this);
+})();

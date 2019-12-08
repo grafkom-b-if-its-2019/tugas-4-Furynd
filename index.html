@@ -1,34 +1,33 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>WEBGL TUTORIAL</title>
-    <meta name="author" content="Furynd">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link href="styles.css" rel="stylesheet" type="text/css">
-  </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Belajar WebGL</title>
+</head>
+<body>
+  <canvas id="glcanvas" width="640" height="480">
+    Browser Anda tidak mendukung HTML5 <code>&lt;canvas&gt;</code>.
+  </canvas>
 
-  <body>
-    <div id="canvas-container">
-      <canvas id="glcanvas">
-        Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
-      </canvas>      
-    </div>
-    <!-- Shaders -->
-    <script name="shader" data-src="shaders/vertex.glsl" data-type="vertex" data-version="v1"></script>
-    <script name="shader" data-src="shaders/fragment.glsl" data-type="fragment" data-version="v1"></script>
-    <script name="shader" data-src="shaders/vertex2.glsl" data-type="vertex" data-version="v2"></script>
-    <script name="shader" data-src="shaders/fragment2.glsl" data-type="fragment" data-version="v2"></script>
-    
-    <!-- Library: Signals processing used for dispatching methods -->
-    <script type="text/javascript" src="libs/signals.js"></script>
+  <!-- Shaders -->
+  <script name="shader" data-src="shaders/vertex.glsl" data-type="vertex" data-version="v1"></script>
+  <script name="shader" data-src="shaders/fragment.glsl" data-type="fragment" data-version="v1"></script>
+  <script name="shader" data-src="shaders/vertex2.glsl" data-type="vertex" data-version="v2"></script>
+  <script name="shader" data-src="shaders/fragment2.glsl" data-type="fragment" data-version="v2"></script>
+<!-- 
+  <h1>Tekan X, Y, Z untuk mengatur arah rotasi kubus</h1>
+  <h2>Tekan S untuk stop rotasi, dan P untuk melanjutkan rotasi</h2> -->
 
-    <!-- Library: our common library -->
-    <script type="text/javascript" src="libs/glUtils.js"></script>
+  <!-- Library untuk men-dispatch methods -->
+  <script type="text/javascript" src="libs/signals.js"></script>
+  <script type="text/javascript" src="libs/gl-matrix-min.js"></script>
 
-    <script type="text/javascript" src="libs/glMatrix.js"></script>
+  <!-- JavaScript untuk menghubungkan ke WebGL -->
+  <script type="text/javascript" src="libs/glUtils.js"></script>
 
-    <!-- This is the bulk of the actual WebGL stuff -->
-    <script type="text/javascript" src="index.js"></script>
-  </body>
+  <!-- JavaScript utama kita -->
+  <script type="text/javascript" src="index.js"></script>
+</body>
 </html>

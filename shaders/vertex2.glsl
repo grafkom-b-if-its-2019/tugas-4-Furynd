@@ -1,41 +1,25 @@
 precision mediump float;
 
 attribute vec3 vPosition;
+attribute vec3 vNormal;
 attribute vec3 vColor;
+
 varying vec3 fColor;
+varying vec3 fPosition;
+varying vec3 fNormal;
 
-uniform float scale;
-// uniform float alpha;
-uniform vec3 trans3d;
+uniform mat4 projection;
+uniform mat4 view;
+uniform mat4 model;
+uniform mat4 MVPMatrix;
 
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
+uniform mat3 normalMatrix;
 
 void main() {
   fColor = vColor;
 
-  vec4 pos = vec4(vPosition, 1.0);
-
-  mat4 rotate = mat4(
-    scale,            0.0, 0.0, 0.0,
-      0.0,              1.0, 0.0, 0.0,
-      0.0,              0.0, 1.0, 0.0,
-    -0.5*scale+0.5,   0.0, 0.0, 1.0
-  );
-
-  mat4 translate = mat4(
-    1.0,          0.0,        0.0,    0.0,
-    0.0,          1.0,        0.0,    0.0, 
-    0.0,          0.0,        1.0,    0.0,
-    -0.5 + trans3d.x, trans3d.y, trans3d.z,  1.0
-  );
-
-  mat4 translate1 = mat4(
-    1.0, 0.0, 0.0, 0.0,
-    0.0, 1.0, 0.0, 0.0,
-    0.0, 0.0, 1.0, 0.0,
-    -0.5, 0.0, 0.0, 1.0
-  );
-
-  gl_Position = uProjectionMatrix * uModelViewMatrix * translate * rotate * pos;
+  gl_Position = MVPMatrix * vec4(vPosition, 1.0);
+  
+  fPosition = vec3(view * model * vec4(vPosition, 1.0));
+  fNormal = normalMatrix * vNormal;
 }
